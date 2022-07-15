@@ -25,6 +25,8 @@ class EventFactory extends Factory
             'title' => $this->faker->name,
             'start'  => $date->format('Y-m-d H:i:s'),
             'end'  => $date->addWeeks(rand(1, 52))->format('Y-m-d H:i:s'),
+            'address' => $this->faker->address,
+            'priority' => $this->faker->numberBetween(1, 3)
         ];
     }
 }

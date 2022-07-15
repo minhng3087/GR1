@@ -24,6 +24,10 @@ class CalendarApi {
     getEventsByUser(id) {
         const url = `user/${id}/events`
         return axios.get(url)
+    };
+    getEventsByUserOrder(id) {
+        const url = `user/${id}/events-order`
+        return axios.get(url)
     }
 }
 

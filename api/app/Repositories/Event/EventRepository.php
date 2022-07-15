@@ -17,4 +17,10 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
     {
         return User::with('events')->findOrFail($id);
     }
+    public function getEventsByUserOrder($id)
+    {
+        return User::with(['events' => function ($q) {
+            $q->orderBy('priority', 'DESC');
+        }])->findOrFail($id);
+    }
 }

@@ -21,6 +21,10 @@ Route::get('/', function () {
 
 require __DIR__.'/auth.php';
 
-Route::resource('/events', EventController::class);
-Route::get('/user/{id}/events', [EventController::class, 'getEventsByUser']);
-Route::get('/test', [NotificationController::class, 'index']);
+Route::group(['middleware' => 'auth'], function()
+{
+    Route::resource('/events', EventController::class);
+    Route::get('/user/{id}/events', [EventController::class, 'getEventsByUser']);
+    Route::get('/user/{id}/events-order', [EventController::class, 'getEventsByUserOrder']);
+    Route::get('/test', [NotificationController::class, 'index']);
+});

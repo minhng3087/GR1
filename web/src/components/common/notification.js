@@ -28,6 +28,6 @@ export const openCustomNotificationWithIcon = (type, message) => {
   notification[type]({
     message: message,
     style: getNotificationStyle(type),
-    duration: 0
+    duration: 2
   })
 }

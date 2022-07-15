@@ -104,4 +104,9 @@ class EventController extends Controller
     {
         return response()->json($this->eventRepository->getEventsByUser($id));
     }
+    
+    public function getEventsByUserOrder($id)
+    {
+        return response()->json($this->eventRepository->getEventsByUserOrder($id));
+    }
 }
