@@ -15,6 +15,8 @@ class AddUserIdToEvents extends Migration
     {
         Schema::table('events', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id');
+            $table->tinyInteger('priority')->default(1);
+            $table->string('address')->nullable();
         });
     }
 
@@ -26,7 +28,7 @@ class AddUserIdToEvents extends Migration
     public function down()
     {
         Schema::table('events', function (Blueprint $table) {
-            $table->dropColumn('user_id');
+            $table->dropColumn(['user_id', 'priority', 'address']);
         });
     }
 }
