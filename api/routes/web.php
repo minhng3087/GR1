@@ -27,4 +27,5 @@ Route::group(['middleware' => 'auth'], function()
     Route::get('/user/{id}/events', [EventController::class, 'getEventsByUser']);
     Route::get('/user/{id}/events-order', [EventController::class, 'getEventsByUserOrder']);
     Route::get('/test', [NotificationController::class, 'index']);
+    Route::get('/user/{id}/notifications', [NotificationController::class, 'index']);
 });

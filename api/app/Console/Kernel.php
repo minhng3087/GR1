@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('users:event-reminder')->daily();
+        $schedule->command('users:event-reminder')->everyMinute();
     }
 
     /**

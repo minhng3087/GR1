@@ -178,15 +178,13 @@ const Calendar = ({user}) => {
   }, [])
 
   return (
-    <div className="container mx-auto relative">
-      <div>
+    <div className="container mx-auto">
         <Button type="primary" onClick={showModal} size="large" className={styles.button + ' absolute border-solid border-2 rounded-sm top-10'}>
           Add Event
         </Button>
         <Button type="primary" onClick={showTable} size="large" className={styles.button + ' absolute border-solid border-2 rounded-sm top-10 ml-2'}>
           List Events
         </Button>
-      </div>
       <FullCalendar
         plugins={[
             dayGridPlugin,
