@@ -1,6 +1,5 @@
 import Navigation from '@/components/Layouts/Navigation'
 import { useAuth } from '@/hooks/auth'
-import withAuth from '@/components/withAuth'
 
 const AppLayout = ({header, children }) => {
     const { user } = useAuth({ middleware: 'auth' })
@@ -23,4 +22,4 @@ const AppLayout = ({header, children }) => {
     )
 }
 
-export default withAuth(AppLayout)
+export default AppLayout

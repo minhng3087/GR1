@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState } from 'react'
 import { Table as AntTable, Button, Input, Space } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
@@ -6,9 +6,9 @@ import Highlighter from 'react-highlight-words'
 const Table = (props) => {
   const { columns, selectInput, ...otherTableProps } = props
 
-  const [searchText, setSearchText] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
-  const searchInput = useRef(null);
+  const [searchText, setSearchText] = useState('')
+  const [searchedColumn, setSearchedColumn] = useState('')
+  const searchInput = useRef(null)
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm()

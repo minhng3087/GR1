@@ -17,32 +17,34 @@ const DEFAULT_NOTIFICATION = {
     message: "Notification one.",
     detailPage: "/events",
     receivedTime: "12h ago"
-  };
+}
 
 const Navigation = ({ user }) => {
     const router = useRouter()
-    const [data, setData] = useState([DEFAULT_NOTIFICATION]);
+    const [data, setData] = useState([DEFAULT_NOTIFICATION])
 
     const { logout } = useAuth()
 
     useEffect(() => {
-        const fetchNotificationList = async () => {
-          try {
-            const response = await notificationApi.getAll(user.id)
-            setData(response.data.map(row => (
-                {
-                    image: row.data.image ? row.data.image : "https://cutshort-data.s3.amazonaws.com/cloudfront/public/companies/5809d1d8af3059ed5b346ed1/logo-1615367026425-logo-v6.png",
-                    message: row.data.title,
-                    receivedTime: moment(row.created_at).fromNow()
-                }
-              )))
-          }catch (err) {
-            console.log(err)
-          }
+        if (user !== undefined) {
+            const fetchNotificationList = async () => {
+              try {
+                const response = await notificationApi.getAll(user.id)
+                setData(response.data.map(row => (
+                    {
+                        image: row.data.image ? row.data.image : "https://cutshort-data.s3.amazonaws.com/cloudfront/public/companies/5809d1d8af3059ed5b346ed1/logo-1615367026425-logo-v6.png",
+                        message: row.data.title,
+                        receivedTime: moment(row.created_at).fromNow()
+                    }
+                  )))
+              }catch (err) {
+                console.log(err)
+              }
+            }
+        
+            fetchNotificationList()
         }
-    
-        fetchNotificationList()
-    }, [])
+    }, [user])
 
     const [open, setOpen] = useState(false)
 

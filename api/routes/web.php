@@ -21,7 +21,7 @@ Route::get('/', function () {
 
 require __DIR__.'/auth.php';
 
-Route::group(['middleware' => 'auth'], function()
+Route::group(['middleware' => 'auth:sanctum'], function()
 {
     Route::resource('/events', EventController::class);
     Route::get('/user/{id}/events', [EventController::class, 'getEventsByUser']);

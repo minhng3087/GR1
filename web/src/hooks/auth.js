@@ -1,11 +1,12 @@
 import useSWR from 'swr'
 import axios from '@/lib/axios'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import {logIn} from '@/utils/auth'
 
 export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     const router = useRouter()
+
+    const [isLoading, setIsLoading] = useState(true)
 
     const { data: user, error, mutate } = useSWR('/api/user', () =>
         axios
@@ -44,7 +45,6 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
         axios
             .post('/login', props)
             .then(() => {
-                logIn()
                 mutate()
             })
             .catch(error => {
@@ -103,17 +103,22 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     }
 
     useEffect(() => {
+        if (user || error) {
+            setIsLoading(false)
+        }
+
         if (middleware === 'guest' && redirectIfAuthenticated && user) router.push(redirectIfAuthenticated)
         if (middleware === 'auth' && error) logout()
-    }, [user, error])
+    })
 
     return {
         user,
+        isLoading,
         register,
         login,
         forgotPassword,
         resetPassword,
         resendEmailVerification,
-        logout,
+        logout
     }
 }
