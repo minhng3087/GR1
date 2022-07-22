@@ -78,7 +78,9 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
 
         axios
             .post('/reset-password', { token: router.query.token, ...props })
-            .then(response => router.push('/login?reset=' + btoa(response.data.status)))
+            .then(response =>
+                router.push('/login?reset=' + btoa(response.data.status)),
+            )
             .catch(error => {
                 if (error.response.status !== 422) throw error
 
@@ -93,10 +95,8 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     }
 
     const logout = async () => {
-        if (! error) {
-            await axios
-                .post('/logout')
-                .then(() => mutate())
+        if (!error) {
+            await axios.post('/logout').then(() => mutate())
         }
 
         window.location.pathname = '/login'
@@ -107,7 +107,8 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
             setIsLoading(false)
         }
 
-        if (middleware === 'guest' && redirectIfAuthenticated && user) router.push(redirectIfAuthenticated)
+        if (middleware === 'guest' && redirectIfAuthenticated && user)
+            router.push(redirectIfAuthenticated)
         if (middleware === 'auth' && error) logout()
     })
 
@@ -119,6 +120,6 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
         forgotPassword,
         resetPassword,
         resendEmailVerification,
-        logout
+        logout,
     }
 }

@@ -24,7 +24,13 @@ const Register = () => {
     const submitForm = event => {
         event.preventDefault()
 
-        register({ name, email, password, password_confirmation: passwordConfirmation, setErrors })
+        register({
+            name,
+            email,
+            password,
+            password_confirmation: passwordConfirmation,
+            setErrors,
+        })
     }
 
     return (

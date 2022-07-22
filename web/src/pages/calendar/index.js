@@ -8,7 +8,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import '@fullcalendar/common/main.css'
 import '@fullcalendar/daygrid/main.css'
 import '@fullcalendar/timegrid/main.css'
-import { Modal, DatePicker, Form, Input, Button, Select, Skeleton } from 'antd'
+import { Modal, DatePicker, Form, Input, Button, Select } from 'antd'
 import moment from 'moment'
 import { openCustomNotificationWithIcon } from '@/components/common/notification'
 import calendarApi from '@/api/calendarApi'
@@ -17,6 +17,7 @@ import { StatusTag } from '@/components/common/statusTag'
 import { Sorter } from '@/utils/sorter'
 import Table from '@/components/Table'
 import { useAuth } from '@/hooks/auth'
+import Loading from '@/components/Loading/Loading'
 
 export default function Calendar() {
     const { user, isLoading } = useAuth({ middleware: 'auth' })
@@ -78,7 +79,7 @@ export default function Calendar() {
     const showModal = async arg => {
         if (arg.event) {
             try {
-                const res = await calendarApi.getDetailEvent(arg.event.idid)
+                const res = await calendarApi.getDetailEvent(arg.event.id)
                 form.setFieldsValue({
                     id: res.data.id,
                     title: res.data.title,
@@ -195,9 +196,9 @@ export default function Calendar() {
             </Head>
             <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div className="bg-white border-b border-gray-200">
-                    <div className="container mx-auto">
+                    <div className="container mx-auto mb-8">
                         {isLoading || !user ? (
-                            <Skeleton />
+                            <Loading />
                         ) : (
                             <>
                                 <Button

@@ -2,7 +2,9 @@ import ApplicationLogo from '@/components/ApplicationLogo'
 import Dropdown from '@/components/Dropdown'
 import Link from 'next/link'
 import NavLink from '@/components/NavLink'
-import ResponsiveNavLink, { ResponsiveNavButton } from '@/components/ResponsiveNavLink'
+import ResponsiveNavLink, {
+    ResponsiveNavButton,
+} from '@/components/ResponsiveNavLink'
 import { DropdownButton } from '@/components/DropdownLink'
 import { useAuth } from '@/hooks/auth'
 import { useRouter } from 'next/router'
@@ -10,13 +12,14 @@ import { useState, useEffect } from 'react'
 import Notifications from 'react-notifications-menu'
 import notificationApi from '@/api/notificationApi'
 import moment from 'moment'
+import { openCustomNotificationWithIcon } from '@/components/common/notification'
 
 const DEFAULT_NOTIFICATION = {
     image:
-      "https://cutshort-data.s3.amazonaws.com/cloudfront/public/companies/5809d1d8af3059ed5b346ed1/logo-1615367026425-logo-v6.png",
-    message: "Notification one.",
-    detailPage: "/events",
-    receivedTime: "12h ago"
+        'https://cutshort-data.s3.amazonaws.com/cloudfront/public/companies/5809d1d8af3059ed5b346ed1/logo-1615367026425-logo-v6.png',
+    message: 'Notification one.',
+    detailPage: '/events',
+    receivedTime: '12h ago',
 }
 
 const Navigation = ({ user }) => {
@@ -28,20 +31,22 @@ const Navigation = ({ user }) => {
     useEffect(() => {
         if (user !== undefined) {
             const fetchNotificationList = async () => {
-              try {
-                const response = await notificationApi.getAll(user.id)
-                setData(response.data.map(row => (
-                    {
-                        image: row.data.image ? row.data.image : "https://cutshort-data.s3.amazonaws.com/cloudfront/public/companies/5809d1d8af3059ed5b346ed1/logo-1615367026425-logo-v6.png",
-                        message: row.data.title,
-                        receivedTime: moment(row.created_at).fromNow()
-                    }
-                  )))
-              }catch (err) {
-                console.log(err)
-              }
+                try {
+                    const response = await notificationApi.getAll(user.id)
+                    setData(
+                        response.data.map(row => ({
+                            image: row.data.image
+                                ? row.data.image
+                                : 'https://cutshort-data.s3.amazonaws.com/cloudfront/public/companies/5809d1d8af3059ed5b346ed1/logo-1615367026425-logo-v6.png',
+                            message: row.data.title,
+                            receivedTime: moment(row.created_at).fromNow(),
+                        })),
+                    )
+                } catch (err) {
+                    openCustomNotificationWithIcon('error', err)
+                }
             }
-        
+
             fetchNotificationList()
         }
     }, [user])
@@ -79,12 +84,15 @@ const Navigation = ({ user }) => {
                     </div>
 
                     <div className="items-center flex">
-                        <Notifications 
+                        <Notifications
                             data={data}
                             header={{
-                            title: "Notifications",
-                            option: { text: "View All", onClick: () => console.log("Clicked") }
-                          }}
+                                title: 'Notifications',
+                                option: {
+                                    text: 'View All',
+                                    onClick: () => console.log('Clicked'),
+                                },
+                            }}
                         />
                     </div>
 
@@ -111,7 +119,6 @@ const Navigation = ({ user }) => {
                                     </div>
                                 </button>
                             }>
-
                             {/* Authentication */}
                             <DropdownButton onClick={logout}>
                                 Logout
