@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,11 +22,12 @@ Route::get('/', function () {
 
 require __DIR__.'/auth.php';
 
-Route::group(['middleware' => 'auth:sanctum'], function()
-{
+Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::resource('/events', EventController::class);
-    Route::get('/user/{id}/events', [EventController::class, 'getEventsByUser']);
-    Route::get('/user/{id}/events-order', [EventController::class, 'getEventsByUserOrder']);
-    Route::get('/test', [NotificationController::class, 'index']);
-    Route::get('/user/{id}/notifications', [NotificationController::class, 'index']);
+    Route::group(['prefix' => 'user/{id}'], function () {
+        Route::get('/events', [UserController::class, 'getEventsByUser']);
+        Route::get('/events-order', [UserController::class, 'getEventsByUserOrder']);
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::get('/not-me', [UserController::class, 'getListUsersNotMe']);
+    });
 });

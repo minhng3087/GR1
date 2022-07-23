@@ -6,6 +6,9 @@ use App\Repositories\RepositoryInterface;
 
 interface EventRepositoryInterface extends RepositoryInterface
 {
-    public function getEventsByUser($id);
-    public function getEventsByUserOrder($id);
+    public function createNewEvent($attributes = []);
+
+    public function showEvent($id);
+
+    public function editEvent($id, $attributes = []);
 }

@@ -17,6 +17,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Event\EventRepositoryInterface::class,
             \App\Repositories\Event\EventRepository::class
         );
+
+        $this->app->singleton(
+            \App\Repositories\User\UserRepositoryInterface::class,
+            \App\Repositories\User\UserRepository::class
+        );
     }
 
     /**

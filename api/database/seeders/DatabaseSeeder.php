@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Event;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         User::factory()->count(7)
         ->create()
-        ->each(function(User $category) {
+        ->each(function (User $user) {
             Event::factory()->count(10)
                 ->create([
-                    'user_id' => $category->id,
+                    'user_id' => $user->id,
                 ]);
         });
     }

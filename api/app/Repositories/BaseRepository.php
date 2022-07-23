@@ -2,13 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Repositories\RepositoryInterface;
-
 abstract class BaseRepository implements RepositoryInterface
 {
     protected $model;
 
-   //khởi tạo
+    //khởi tạo
     public function __construct()
     {
         $this->setModel();
@@ -48,6 +46,7 @@ abstract class BaseRepository implements RepositoryInterface
         $result = $this->find($id);
         if ($result) {
             $result->update($attributes);
+
             return $result;
         }
 

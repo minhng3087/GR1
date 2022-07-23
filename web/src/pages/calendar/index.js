@@ -12,19 +12,22 @@ import { Modal, DatePicker, Form, Input, Button, Select } from 'antd'
 import moment from 'moment'
 import { openCustomNotificationWithIcon } from '@/components/common/notification'
 import calendarApi from '@/api/calendarApi'
+import userApi from '@/api/userApi'
 import styles from '@/pages/calendar/style.module.scss'
 import { StatusTag } from '@/components/common/statusTag'
 import { Sorter } from '@/utils/sorter'
 import Table from '@/components/Table'
 import { useAuth } from '@/hooks/auth'
-import Loading from '@/components/Loading/Loading'
 
 export default function Calendar() {
-    const { user, isLoading } = useAuth({ middleware: 'auth' })
+    const { user } = useAuth({ middleware: 'auth' })
 
     const [events, setEvents] = useState([])
     const [dataTable, setDataTable] = useState([])
     const [eventEdit, setEventEdit] = useState(false)
+    const [userAssigned, setUserAssigned] = useState([])
+
+    const [disabled, setDisabled] = useState(false)
 
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [isModalTableVisible, setIsModalTableVisible] = useState(false)
@@ -87,11 +90,21 @@ export default function Calendar() {
                     end_time: moment(res.data.end),
                     priority: res.data.priority,
                     address: res.data.address,
+                    user_assigned: res.data.users_assign
+                        .filter(obj => obj.id !== user.id)
+                        .map(obj => obj.id),
                 })
+                if (res.data.user_id !== user.id) {
+                    setDisabled(true)
+                } else {
+                    setDisabled(false)
+                }
             } catch (err) {
                 openCustomNotificationWithIcon('error', err)
             }
             setEventEdit(true)
+        } else {
+            setDisabled(false)
         }
         setIsModalVisible(true)
     }
@@ -131,15 +144,21 @@ export default function Calendar() {
             user_id: user.id,
             address: values.address,
             priority: values.priority,
+            user_assigned: values.user_assigned,
         }
         if (eventEdit) {
             try {
                 const response = await calendarApi.updateEvent(values.id, data)
-                const updatedItem = events.map(todo => {
-                    return todo.id === values.id ? data : todo
-                })
-                setEvents(updatedItem)
-                openCustomNotificationWithIcon('success', response.data.message)
+                if (response.status === 200) {
+                    const updatedItem = events.map(todo => {
+                        return todo.id === values.id ? data : todo
+                    })
+                    setEvents(updatedItem)
+                    openCustomNotificationWithIcon(
+                        'success',
+                        response.data.message,
+                    )
+                }
             } catch (err) {
                 openCustomNotificationWithIcon('error', err)
             }
@@ -147,10 +166,16 @@ export default function Calendar() {
         } else {
             try {
                 const response = await calendarApi.addEvent(data)
-                setEvents([...events, data])
-                openCustomNotificationWithIcon('success', response.data.message)
+                if (response.status === 200) {
+                    setEvents([...events, data])
+                    openCustomNotificationWithIcon(
+                        'success',
+                        response.data.message,
+                    )
+                }
             } catch (err) {
-                openCustomNotificationWithIcon('error', err)
+                // openCustomNotificationWithIcon('error', Object.values(err.response.data.errors).flat())
+                openCustomNotificationWithIcon('error', 'Error')
             }
         }
         setIsModalVisible(false)
@@ -179,13 +204,23 @@ export default function Calendar() {
             const fetchEventList = async () => {
                 try {
                     const response = await calendarApi.getEventsByUser(user?.id)
-                    setEvents(response.data.events)
+                    setEvents(response.data)
+                } catch (err) {
+                    openCustomNotificationWithIcon('error', err)
+                }
+            }
+
+            const fetchUserNotMe = async () => {
+                try {
+                    const response = await userApi.getAllUserNotMe(user?.id)
+                    setUserAssigned(response.data)
                 } catch (err) {
                     openCustomNotificationWithIcon('error', err)
                 }
             }
 
             fetchEventList()
+            fetchUserNotMe()
         }
     }, [user])
 
@@ -197,168 +232,167 @@ export default function Calendar() {
             <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div className="bg-white border-b border-gray-200">
                     <div className="container mx-auto mb-8">
-                        {isLoading || !user ? (
-                            <Loading />
-                        ) : (
-                            <>
-                                <Button
-                                    type="primary"
-                                    onClick={showModal}
-                                    size="large"
-                                    className={
-                                        styles.button +
-                                        ' absolute border-solid border-2 rounded-sm top-10'
-                                    }>
-                                    Add Event
-                                </Button>
-                                <Button
-                                    type="primary"
-                                    onClick={showTable}
-                                    size="large"
-                                    className={
-                                        styles.button +
-                                        ' absolute border-solid border-2 rounded-sm top-10 ml-2'
-                                    }>
-                                    List Events
-                                </Button>
-                                <FullCalendar
-                                    plugins={[
-                                        dayGridPlugin,
-                                        timeGridPlugin,
-                                        interactionPlugin,
-                                    ]}
-                                    titleFormat={{
-                                        year: 'numeric',
-                                        month: 'long',
-                                    }}
-                                    selectable={true}
-                                    editable={true}
-                                    events={events}
-                                    headerToolbar={{
-                                        left: 'prev,next,today',
-                                        center: 'title',
-                                        right:
-                                            'dayGridMonth,timeGridWeek,timeGridDay',
-                                    }}
-                                    eventClick={showModal}
-                                />
+                        <Button
+                            type="primary"
+                            onClick={showModal}
+                            size="large"
+                            className={
+                                styles.button +
+                                ' absolute border-solid border-2 rounded-sm top-10'
+                            }>
+                            Add Event
+                        </Button>
+                        <Button
+                            type="primary"
+                            onClick={showTable}
+                            size="large"
+                            className={
+                                styles.button +
+                                ' absolute border-solid border-2 rounded-sm top-10 ml-2'
+                            }>
+                            List Events
+                        </Button>
+                        <FullCalendar
+                            plugins={[
+                                dayGridPlugin,
+                                timeGridPlugin,
+                                interactionPlugin,
+                            ]}
+                            titleFormat={{
+                                year: 'numeric',
+                                month: 'long',
+                            }}
+                            selectable={true}
+                            editable={true}
+                            events={events}
+                            headerToolbar={{
+                                left: 'prev,next,today',
+                                center: 'title',
+                                right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                            }}
+                            eventClick={showModal}
+                        />
 
-                                {/* Modal form */}
-                                <Modal
-                                    title={
-                                        eventEdit ? 'Edit Event' : 'New Event'
-                                    }
-                                    visible={isModalVisible}
-                                    onCancel={handleCancel}
-                                    footer={[
-                                        <Button
-                                            key="back"
-                                            onClick={handleCancel}>
-                                            Cancel
-                                        </Button>,
-                                        eventEdit && (
-                                            <Button
-                                                key="delete"
-                                                type="primary"
-                                                danger
-                                                onClick={handleDelete}>
-                                                Delete
-                                            </Button>
-                                        ),
-                                        <Button
-                                            key="submit"
-                                            onClick={form.submit}
-                                            type="primary">
-                                            Submit
-                                        </Button>,
+                        {/* Modal form */}
+                        <Modal
+                            title={eventEdit ? 'Edit Event' : 'New Event'}
+                            visible={isModalVisible}
+                            onCancel={handleCancel}
+                            footer={[
+                                <Button key="back" onClick={handleCancel}>
+                                    Cancel
+                                </Button>,
+                                eventEdit && (
+                                    <Button
+                                        key="delete"
+                                        type="primary"
+                                        danger
+                                        onClick={handleDelete}
+                                        disabled={disabled}>
+                                        Delete
+                                    </Button>
+                                ),
+                                <Button
+                                    key="submit"
+                                    onClick={form.submit}
+                                    disabled={disabled}
+                                    type="primary">
+                                    Submit
+                                </Button>,
+                            ]}>
+                            <Form
+                                onFinish={onSubmit}
+                                form={form}
+                                disabled={disabled}
+                                layout="horizontal"
+                                labelCol={{
+                                    span: 5,
+                                }}
+                                wrapperCol={{
+                                    span: 20,
+                                }}>
+                                <Form.Item name="id" hidden={true}>
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    name="title"
+                                    label="Name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
                                     ]}>
-                                    <Form
-                                        onFinish={onSubmit}
-                                        form={form}
-                                        layout="horizontal"
-                                        labelCol={{
-                                            span: 5,
-                                        }}
-                                        wrapperCol={{
-                                            span: 20,
-                                        }}>
-                                        <Form.Item name="id" hidden={true}>
-                                            <Input />
-                                        </Form.Item>
-                                        <Form.Item
-                                            name="title"
-                                            label="Title"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                },
-                                            ]}>
-                                            <Input />
-                                        </Form.Item>
-                                        <Form.Item
-                                            name="start_time"
-                                            label="Start Date"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                },
-                                            ]}>
-                                            <DatePicker showTime />
-                                        </Form.Item>
-                                        <Form.Item
-                                            name="end_time"
-                                            label="End Date">
-                                            <DatePicker showTime />
-                                        </Form.Item>
-                                        <Form.Item
-                                            label="Priority"
-                                            name="priority"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                },
-                                            ]}>
-                                            <Select placeholder="Please select priority">
-                                                {priorities.map(
-                                                    (priority, index) => (
-                                                        <Select.Option
-                                                            key={index}
-                                                            value={
-                                                                priority.value
-                                                            }>
-                                                            {priority.name}
-                                                        </Select.Option>
-                                                    ),
-                                                )}
-                                            </Select>
-                                        </Form.Item>
-                                        <Form.Item
-                                            name="address"
-                                            label="Address"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                },
-                                            ]}>
-                                            <Input />
-                                        </Form.Item>
-                                    </Form>
-                                </Modal>
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    name="start_time"
+                                    label="Start Date"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}>
+                                    <DatePicker showTime />
+                                </Form.Item>
+                                <Form.Item name="end_time" label="End Date">
+                                    <DatePicker showTime />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Priority"
+                                    name="priority"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}>
+                                    <Select placeholder="Please select priority">
+                                        {priorities.map((priority, index) => (
+                                            <Select.Option
+                                                key={index}
+                                                value={priority.value}>
+                                                {priority.name}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item label="Assign" name="user_assigned">
+                                    <Select
+                                        placeholder="Please select people to assign"
+                                        mode="multiple">
+                                        {userAssigned.map((item, index) => (
+                                            <Select.Option
+                                                key={index}
+                                                value={item.id}>
+                                                {item.name}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    name="address"
+                                    label="Address"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}>
+                                    <Input />
+                                </Form.Item>
+                            </Form>
+                        </Modal>
 
-                                {/* Modal table */}
-                                <Modal
-                                    visible={isModalTableVisible}
-                                    onCancel={handleCancelTable}
-                                    width={1000}
-                                    footer={null}>
-                                    <Table
-                                        dataSource={dataTable}
-                                        columns={columns}
-                                        className="mt-5"
-                                    />
-                                </Modal>
-                            </>
-                        )}
+                        {/* Modal table */}
+                        <Modal
+                            visible={isModalTableVisible}
+                            onCancel={handleCancelTable}
+                            width={1000}
+                            footer={null}>
+                            <Table
+                                dataSource={dataTable}
+                                columns={columns}
+                                className="mt-5"
+                            />
+                        </Modal>
                     </div>
                 </div>
             </div>

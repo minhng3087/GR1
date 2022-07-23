@@ -15,7 +15,7 @@ import Loading from '@/components/Loading/Loading'
 const Login = () => {
     const router = useRouter()
 
-    const { user, login } = useAuth({
+    const { user, login, isLoading } = useAuth({
         middleware: 'guest',
         redirectIfAuthenticated: '/dashboard',
     })
@@ -41,7 +41,7 @@ const Login = () => {
 
     return (
         <GuestLayout>
-            {user ? (
+            {user || isLoading ? (
                 <Loading />
             ) : (
                 <AuthCard

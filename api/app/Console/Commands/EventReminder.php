@@ -2,10 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Notifications\EventReminderNotification;
 use App\Models\Event;
-use Illuminate\Support\Facades\Notification;
+use App\Notifications\EventReminderNotification;
+use Illuminate\Console\Command;
 
 class EventReminder extends Command
 {
@@ -45,7 +44,7 @@ class EventReminder extends Command
         )->whereRaw(
             'TIMESTAMPDIFF(MINUTE, NOW(), end) > 0 '
         )->with('user')->get();
-        foreach($events as $event) {
+        foreach ($events as $event) {
             $event->user->notify(new EventReminderNotification($event));
         }
     }

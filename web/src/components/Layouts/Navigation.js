@@ -14,17 +14,9 @@ import notificationApi from '@/api/notificationApi'
 import moment from 'moment'
 import { openCustomNotificationWithIcon } from '@/components/common/notification'
 
-const DEFAULT_NOTIFICATION = {
-    image:
-        'https://cutshort-data.s3.amazonaws.com/cloudfront/public/companies/5809d1d8af3059ed5b346ed1/logo-1615367026425-logo-v6.png',
-    message: 'Notification one.',
-    detailPage: '/events',
-    receivedTime: '12h ago',
-}
-
 const Navigation = ({ user }) => {
     const router = useRouter()
-    const [data, setData] = useState([DEFAULT_NOTIFICATION])
+    const [data, setData] = useState([])
 
     const { logout } = useAuth()
 
@@ -38,7 +30,7 @@ const Navigation = ({ user }) => {
                             image: row.data.image
                                 ? row.data.image
                                 : 'https://cutshort-data.s3.amazonaws.com/cloudfront/public/companies/5809d1d8af3059ed5b346ed1/logo-1615367026425-logo-v6.png',
-                            message: row.data.title,
+                            message: row.data.message,
                             receivedTime: moment(row.created_at).fromNow(),
                         })),
                     )

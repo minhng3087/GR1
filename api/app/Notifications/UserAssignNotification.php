@@ -5,19 +5,22 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
-class EventReminderNotification extends Notification
+class UserAssignNotification extends Notification
 {
     use Queueable;
 
     private $event;
+
+    private $user;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($event)
+    public function __construct($user, $event)
     {
+        $this->user = $user;
         $this->event = $event;
     }
 
@@ -41,8 +44,7 @@ class EventReminderNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            'event_id' => $this->event['id'],
-            'title' => $this->event['title'],
+            'message' => $this->user->name.' has assigned '.$this->event->title.' for you',
         ];
     }
 }

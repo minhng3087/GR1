@@ -2,15 +2,16 @@
 
 namespace App\Console;
 
+use App\Console\Commands\EventReminder;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Console\Commands\EventReminder;
 
 class Kernel extends ConsoleKernel
 {
     protected $commands = [
         EventReminder::class,
     ];
+
     /**
      * Define the application's command schedule.
      *
