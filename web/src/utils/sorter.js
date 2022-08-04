@@ -12,15 +12,15 @@ const dateSort = (dateA, dateB) => moment(dateA).diff(moment(dateB))
  * @param {number|string} b
  */
 const defaultSort = (a, b) => {
-    if (a < b) return -1
-    if (b < a) return 1
-    return 0
+  if (a < b) return -1
+  if (b < a) return 1
+  return 0
 }
 
 const nameSort = (a, b) => a.localeCompare(b)
 
 export const Sorter = {
-    DEFAULT: defaultSort,
-    DATE: dateSort,
-    NAME: nameSort,
+  DEFAULT: defaultSort,
+  DATE: dateSort,
+  NAME: nameSort,
 }

@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Event;
 
+use App\Models\Comment;
 use App\Models\Event;
 use App\Models\User;
 use App\Notifications\UserAssignNotification;
@@ -38,5 +39,24 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
             $users = User::whereIn('id', $attributes['user_assigned'])->get();
             Notification::send($users, new UserAssignNotification(Auth::user(), $event));
         }
+    }
+
+    public function getAllComments($id)
+    {
+        $comments = $this->model
+                    ->with('comments.user:id,name')
+                    ->findOrFail($id, ['id', 'title']);
+
+        return $comments;
+    }
+
+    public function saveComment($attributes = [])
+    {
+        $event = $this->model->findOrFail($attributes['event_id']);
+        $comment = new Comment;
+        $comment->user_id = Auth::user()->id;
+        $comment->parent_id = $attributes['parent_id'] ?? null;
+        $comment->body = $attributes['body'];
+        $event->comments()->save($comment);
     }
 }
