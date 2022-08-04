@@ -22,6 +22,10 @@ Route::get('/', function () {
 
 require __DIR__.'/auth.php';
 
+Route::group(['prefix' => 'event/{id}'], function () {
+    Route::get('/comments', [EventController::class, 'getAllComments']);
+});
+
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::resource('/events', EventController::class);
     Route::group(['prefix' => 'user/{id}'], function () {
@@ -30,4 +34,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::get('/not-me', [UserController::class, 'getListUsersNotMe']);
     });
+
+    Route::post('/comment', [EventController::class, 'saveComment']);
 });

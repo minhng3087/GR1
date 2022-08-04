@@ -20,4 +20,9 @@ class Event extends Model
     {
         return $this->belongsToMany(User::class, 'assignments', 'event_id', 'user_id')->withTimestamps();
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 }

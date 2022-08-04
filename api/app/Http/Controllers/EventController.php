@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EventRequest;
 use App\Repositories\Event\EventRepositoryInterface;
+use DB;
+use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
@@ -21,9 +23,9 @@ class EventController extends Controller
         );
     }
 
-    public function create()
+    public function getAllComments($id)
     {
-        //
+        return $this->eventRepository->getAllComments($id);
     }
 
     public function store(EventRequest $request)
@@ -69,5 +71,20 @@ class EventController extends Controller
         return response()->json([
             'message' => 'Delete Successfully',
         ]);
+    }
+
+    public function saveComment(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $this->eventRepository->saveComment($request->all());
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Save comment successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+        }
     }
 }

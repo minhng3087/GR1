@@ -13,116 +13,110 @@ import { useRouter } from 'next/router'
 import Loading from '@/components/Loading/Loading'
 
 const Login = () => {
-    const router = useRouter()
+  const router = useRouter()
 
-    const { user, login, isLoading } = useAuth({
-        middleware: 'guest',
-        redirectIfAuthenticated: '/dashboard',
-    })
+  const { user, login, isLoading } = useAuth({
+    middleware: 'guest',
+    redirectIfAuthenticated: '/dashboard',
+  })
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [errors, setErrors] = useState([])
-    const [status, setStatus] = useState(null)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState([])
+  const [status, setStatus] = useState(null)
 
-    useEffect(() => {
-        if (router.query.reset?.length > 0 && errors.length === 0) {
-            setStatus(atob(router.query.reset))
-        } else {
-            setStatus(null)
-        }
-    })
-
-    const submitForm = async event => {
-        event.preventDefault()
-
-        login({ email, password, setErrors, setStatus })
+  useEffect(() => {
+    if (router.query.reset?.length > 0 && errors.length === 0) {
+      setStatus(atob(router.query.reset))
+    } else {
+      setStatus(null)
     }
+  })
 
-    return (
-        <GuestLayout>
-            {user || isLoading ? (
-                <Loading />
-            ) : (
-                <AuthCard
-                    logo={
-                        <Link href="/">
-                            <a>
-                                <ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />
-                            </a>
-                        </Link>
-                    }>
-                    {/* Session Status */}
-                    <AuthSessionStatus className="mb-4" status={status} />
+  const submitForm = async event => {
+    event.preventDefault()
 
-                    {/* Validation Errors */}
-                    <AuthValidationErrors className="mb-4" errors={errors} />
+    login({ email, password, setErrors, setStatus })
+  }
 
-                    <form onSubmit={submitForm}>
-                        {/* Email Address */}
-                        <div>
-                            <Label htmlFor="email">Email</Label>
+  return (
+    <GuestLayout>
+      {user || isLoading ? (
+        <Loading />
+      ) : (
+        <AuthCard
+          logo={
+            <Link href="/">
+              <a>
+                <ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />
+              </a>
+            </Link>
+          }>
+          {/* Session Status */}
+          <AuthSessionStatus className="mb-4" status={status} />
 
-                            <Input
-                                id="email"
-                                type="email"
-                                value={email}
-                                className="block mt-1 w-full"
-                                onChange={event => setEmail(event.target.value)}
-                                required
-                                autoFocus
-                            />
-                        </div>
+          {/* Validation Errors */}
+          <AuthValidationErrors className="mb-4" errors={errors} />
 
-                        {/* Password */}
-                        <div className="mt-4">
-                            <Label htmlFor="password">Password</Label>
+          <form onSubmit={submitForm}>
+            {/* Email Address */}
+            <div>
+              <Label htmlFor="email">Email</Label>
 
-                            <Input
-                                id="password"
-                                type="password"
-                                value={password}
-                                className="block mt-1 w-full"
-                                onChange={event =>
-                                    setPassword(event.target.value)
-                                }
-                                required
-                                autoComplete="current-password"
-                            />
-                        </div>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                className="block mt-1 w-full"
+                onChange={event => setEmail(event.target.value)}
+                required
+                autoFocus
+              />
+            </div>
 
-                        {/* Remember Me */}
-                        <div className="block mt-4">
-                            <label
-                                htmlFor="remember_me"
-                                className="inline-flex items-center">
-                                <input
-                                    id="remember_me"
-                                    type="checkbox"
-                                    name="remember"
-                                    className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                />
+            {/* Password */}
+            <div className="mt-4">
+              <Label htmlFor="password">Password</Label>
 
-                                <span className="ml-2 text-sm text-gray-600">
-                                    Remember me
-                                </span>
-                            </label>
-                        </div>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                className="block mt-1 w-full"
+                onChange={event => setPassword(event.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
 
-                        <div className="flex items-center justify-end mt-4">
-                            <Link href="/forgot-password">
-                                <a className="underline text-sm text-gray-600 hover:text-gray-900">
-                                    Forgot your password?
-                                </a>
-                            </Link>
+            {/* Remember Me */}
+            <div className="block mt-4">
+              <label htmlFor="remember_me" className="inline-flex items-center">
+                <input
+                  id="remember_me"
+                  type="checkbox"
+                  name="remember"
+                  className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                />
 
-                            <Button className="ml-3">Login</Button>
-                        </div>
-                    </form>
-                </AuthCard>
-            )}
-        </GuestLayout>
-    )
+                <span className="ml-2 text-sm text-gray-600">Remember me</span>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-end mt-4">
+              <Link href="/forgot-password">
+                <a className="underline text-sm text-gray-600 hover:text-gray-900">
+                  Forgot your password?
+                </a>
+              </Link>
+
+              <Button className="ml-3">Login</Button>
+            </div>
+          </form>
+        </AuthCard>
+      )}
+    </GuestLayout>
+  )
 }
 
 export default Login

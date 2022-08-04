@@ -34,6 +34,7 @@
     "@babel/eslint-parser": "^7.12.1",
     "@next/eslint-plugin-next": "^10.0.4",
     "@tailwindcss/forms": "^0.4.0",
+    "@types/react": "^18.0.17",
     "autoprefixer": "10.4.5",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.17.0",
