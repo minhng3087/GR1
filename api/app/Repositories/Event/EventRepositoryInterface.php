@@ -11,4 +11,8 @@ interface EventRepositoryInterface extends RepositoryInterface
     public function showEvent($id);
 
     public function editEvent($id, $attributes = []);
+
+    public function getAllComments($id);
+
+    public function saveComment($attributes = []);
 }
