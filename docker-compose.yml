@@ -1,0 +1,61 @@
+services:
+  app:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: laravel-app
+    container_name: laravel-app
+    depends_on:
+      - mysql
+    networks:
+      - laravel
+    env_file:
+      - .env
+
+  nginx:
+    image: nginx:alpine
+    container_name: laravel-nginx
+    ports:
+      - "3000:3000"  # frontend
+      - "8080:80"  # backend
+    volumes:
+      - ./api/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+      - frontend
+    networks:
+      - laravel
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: laravel-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}  # Use DB_PASSWORD from .env
+      MYSQL_DATABASE: ${DB_DATABASE}      # Use DB_DATABASE from .env
+      MYSQL_USER: ${DB_USERNAME}          # Use DB_USERNAME from .env
+      MYSQL_PASSWORD: ${DB_PASSWORD}      # Use DB_PASSWORD from .env
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - laravel
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: nextjs-app
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+    networks:
+      - laravel
+
+volumes:
+  mysql-data:
+
+networks:
+  laravel:
+    driver: bridge
